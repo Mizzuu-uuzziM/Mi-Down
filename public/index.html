@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang=id>
+   <head>
+      <meta charset="utf8" />
+      <title>
+         Mi_Down
+      </title>
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <link href="./style.css" rel="stylesheet">
+   </head>
+   <body>
+      <nav>
+         <h1>
+            Mi_Down
+         </h1>
+         <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center text-white font-bold">MD</div>
+      </nav>
+      <div class="loader" id="loader">
+         <p>Wait...</p>
+         <span class="loader-3"></span>
+      </div>
+      <div class="iklan" id="iklan">
+         <div class="bg-slate-50 shadow rounded-lg p-[10px] text-center w-screen">
+            <div class="bg-slate-400 w-[25px] rounded-lg shadow" id="noIklan">
+               x
+            </div>
+            <h1>Donate Yujs</h1>
+            <p class="mb-[20px]">Bantu Developer Membeli Device baru</p>
+            <a href="https://saweria.co/mizzuuhtml" class="pr-[70px] pl-[70px] bg-gradient-to-br from-indigo-500 to-pink-500 text-center rounded-md">
+               <i class="fas fa-donate"></i>
+            </a>
+         </div>
+      </div>
+      <section class="mt-[70px] m-[30px] text-center justify-between p-[10%]">
+         <img src="https://avatars.githubusercontent.com/u/187776102?s=1024&v=4" alt="profile" class="w-[100%] rounded-[50px]">
+         <h1 class="mt-[30px] mb-[70px] font-bold text-[40px]">I Am Mizzuu</h1>
+         <a href="https://saweria.co/mizzuuhtml" class="p-[20px] bg-gradient-to-br from-indigo-500 to-pink-500 text-center rounded-md">Donate</a>
+      </section>
+      <main>
+      <section class="shadow mr-[10px] ml-[10px] bg-slate-50 p-[20px] rounded-lg border">
+         <div>
+            <input class="input" id="inp" type="text" placeholder=" Paste Link" required><button id="send">
+               <i class="fas fa-download"></i>
+            </button>
+         </div><br><br>
+         <div id="result" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      </section>
+      </main>
+      <section class="m-[50px]">
+         <p>Kini saya telah membuat website tools downlader yang apa adanya, dikarenakan saya sedang masa belajar dalam hal ini, maka dari itu dimohon untuk request apa saja fitur yang harus saya buat ada web ini, dan apa saja kekurangan atau bug pada frontend maupun backend
+         </p><br>
+         <p>Saya sudah Menyediakan Api untuk layanan ini, tapi hanya ada 1 layanan. Cek <a href="/docs">Docs</a> untuk melihat endpoint api, jika ingin request penambahan api maka kirim request di bawah
+         </p>
+      </section>
+      <form class="grid grid-cols-1 gap-4 p-[20px]">
+         <div class="grid sm:grid-cols-2 gap-4">
+            <input type="text" id="name" placeholder="Nama" class="px-4 py-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-200" required />
+            <input type="email" id="email" placeholder="Email" class="px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200" />
+         </div>
+         <textarea placeholder="Pesan" id="msg" rows="4" class="px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-200" required></textarea>
+
+         <div class="flex items-center justify-between">
+           <div class="text-sm text-slate-500">Kami membalas dalam 1-2 hari kerja.</div>
+           <button class="px-5 py-3 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700" id="request">
+              <i class="fas fa-paper-plane"></i>
+           </button>
+        </div>
+      </form>
+      <div class"messages" id="messages">
+         
+      </div>
+      <div class="toTop" id="toTop">
+         <i class="fa-solid fa-angles-up"></i>
+      </div>
+      <main class="mb-[70px]">
+         
+      </main>
+      <footer>
+         <h3>&copy; Mizzuu-uuzziM&trade;</h3>
+      </footer>
+      <script src="index.js">
+      </script>
+     <!-- <script type="module">
+const axios = require("axios");
+const inp = document.getElementById("inp");
+const send = document.getElementById("send");
+const result = document.getElementById("result");
+
+const q = inp.value.trim()
+
+
+
+send.addEventListener("click", async () => {
+   const req = await axios.get("/api/tiktok?url="+q)
+   const res = await req.json()
+   
+   result.innerHTML = `
+   <p>${req}</p>
+                      `
+})
+      </script>-->
+   </body>
+</html>
+<!--
+https://vm.tiktok.com/ZSHWT2pdnnKmL-fBK6f/ video
+https://vm.tiktok.com/ZSHWTnuBc28wA-awOEj/ album
+-->
