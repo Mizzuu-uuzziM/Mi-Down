@@ -3,130 +3,133 @@ const app = express();
 const fs = require('fs');
 const axios = require('axios');
 const path = require('path');
-
-const DATA_FILE = "./public/request/db.json" //path.join(__dirname, "db.json");
-
+const mongoose = require("mongoose");
 
 require('dotenv').config();
 
-const port = process.env.PORT;
-const hostname = process.env.HOSTNAME;
+app.use(express.json());
 
+// ========= PRONEN ==========
 app.use(express.static(path.join(__dirname, 'public')));
-app.get('/api/tiktok', async (req , res) => {
-   const t = req.query.url;
-  
-   const ur = t.toString()
-   const regex = /(https:\/\/(vt|vm)\.tiktok\.com\/[^\s]+|https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+)/;
 
-   const parseUrl = ur.match(regex)?.[0];
-   
-async function tiktokDl(url){
-   try {
-      const respon = await axios.get(`https://www.tikwm.com/api?url=${url}`)
-      
-      
-      if(respon.data.data.play.endsWith(".mp3")){
-         var data = {
-            type: "album",
-            url: respon.data.data.images
-         }
-         
+// ======== CONNECTION MONGODB ========
+const MONGO_URI = process.env.MONGO_MONGODB_URI;
+if (!MONGO_URI) {
+  console.error("❌ Environment variable MONGO_MONGODB_URI tidak ditemukan!");
+  process.exit(1);
+}
+
+mongoose
+  .connect(MONGO_URI, { dbName: "db" })
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+
+// ======== SCHEMA ========
+const MessageSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  msg: String,
+  createdAt: { type: Date, default: Date.now },
+});
+
+const Message = mongoose.model("Message", MessageSchema);
+
+// ======== TEMBAK DOR API TIKTOK TIKWM ========
+app.get("/api/tiktok", async (req, res) => {
+  const t = req.query.url;
+  const ur = t?.toString();
+  const regex =
+    /(https:\/\/(vt|vm)\.tiktok\.com\/[^\s]+|https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+)/;
+  const parseUrl = ur?.match(regex)?.[0];
+
+  async function tiktokDl(url) {
+    try {
+      const respon = await axios.get(`https://www.tikwm.com/api?url=${url}`);
+      if (respon.data.data.play.endsWith(".mp3")) {
+        return { type: "album", url: respon.data.data.images };
       } else {
-         var data = {
-            type: "video",
-            url: respon.data.data.play
-         }
+        return { type: "video", url: respon.data.data.play };
       }
-      return data
-      console.log(data)
-   }
-   catch(e){
-      console.error(e)
-      const dataError = {
-         status: false,
-         msg: "Gagal Mengambil Data Dari api"
-      }
-      return dataError
-   }
-}
-   try{ 
-      if(parseUrl) {
-         const det = await tiktokDl(parseUrl);
-         console.log(det)
-         res.json(det)
-      }
-   } catch (e) {
-      console.error(t)
-      console.error(e)
-   }
-})
-
-app.get("/hhxhh/post", async (req, res) => {
-   const name = req.query.name;
-   const email = req.query.email;
-   const msg = req.query.msg;
-   if(!name && !email && !msg){
-      const red = fs.readFileSync("./public/request/db.json", "utf8")
-      const rwsult = JSON.parse(red)
-      res.json(rwsult)
-   } else {
-      const a = addDataSync({
-         name: name, 
-         email: email, 
-         msg: msg
-      })
-      const b = fs.readFileSync("./public/request/db.json", "utf8")
-      const c = JSON.parse(b)
-      res.json(c)
-   }
-})
-
-
-/**
- * Add Data Menggubakan fs.writeFileSync
- * @param {Object} newItem - {name, email, msg}
- */
-function addDataSync(newItem) {
-   try {
-      let raw = fs.readFileSync(DATA_FILE, "utf8");
-      let jsonData = JSON.parse(raw);
-
-      let newKey = (Math.max(0, ...Object.keys(jsonData).map(Number)) + 1).toString();
-
-      jsonData[newKey] = {
-         name: newItem.name,
-         email: newItem.email,
-         msg: newItem.msg
-      };
-
-      fs.writeFileSync(DATA_FILE, JSON.stringify(jsonData, null, 2));
-
-      console.log("✅ Data berhasil ditambahkan dengan key:", newKey);
-   } catch (err) {
-      console.error("❌ Error:", err.message);
-   }
-}
-
-/**
- * Ambil semua data 
- * @returns {Array} list pesan [{name, email, msg}, ...]
- */
-function getDataSync() {
-  try {
-    let raw = fs.readFileSync(DATA_FILE, "utf8");
-    let jsonData = JSON.parse(raw);
-
-    // kembalikan array berisi list data
-    return Object.values(jsonData).map(item => ({
-      name: item.name,
-      email: item.email,
-      msg: item.msg
-    }));
-  } catch (err) {
-    console.error("❌ Error:", err.message);
-    return [];
+    } catch (e) {
+      console.error(e);
+      return { status: false, msg: "Gagal Mengambil Data Dari API" };
+    }
   }
-}
 
-module.exports = app
+  try {
+    if (parseUrl) {
+      const det = await tiktokDl(parseUrl);
+      res.json(det);
+    } else {
+      res.status(400).json({ error: "URL tidak valid" });
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+// ======== MongoDB ========
+
+// ======== GET ALL MESSEJ =======
+app.get("/hhxhh/post", async (req, res) => {
+  try {
+    const allMessages = await Message.find().sort({ createdAt: -1 });
+    res.json(allMessages);
+  } catch (err) {
+    console.error("❌ Error GET:", err.message);
+    res.status(500).json({ error: "Gagal mengambil data" });
+  }
+});
+
+// ======== ADD METHOD POST ========
+app.post("/hhxhh/post", async (req, res) => {
+  try {
+    const { name, email, msg } = req.body;
+    if (!name || !email || !msg) {
+      return res.status(400).json({ error: "Semua field wajib diisi" });
+    }
+
+    const newMsg = new Message({ name, email, msg });
+    await newMsg.save();
+
+    const updatedList = await Message.find().sort({ createdAt: -1 });
+    res.status(201).json(updatedList);
+  } catch (err) {
+    console.error("❌ Error POST:", err.message);
+    res.status(500).json({ error: "Gagal menyimpan data" });
+  }
+});
+
+module.exports = app;
+
+/*app.post('/sendmail', (req, res) => {
+  const { prom, subject, message } = req.body
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: gemail, 
+      pass: pwemail 
+    }
+  });
+
+  const mailOptions = {
+    from: prom,
+    to: 'jir@gmail.com', 
+    subject: subject,
+    text: message
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      res.status(500).send(error);
+      console.error(e)
+    } else {
+      res.send('Email sent: ' + info.response);
+      console.log(info.response)
+    }
+  });
+});
+*/
