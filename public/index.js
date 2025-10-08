@@ -9,24 +9,7 @@ const toTop = document.getElementById("toTop");
 const iklan = document.getElementById("iklan");
 const noIklan = document.getElementById("noIklan");
 //>>>>>>>>>>>>>
-const request = document.getElementById("request");
-//>>>>>>>>>>>>>
 
-request.addEventListener("click", async () => {
-   try {
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const msg = document.getElementById("msg").value.trim();
-      if(!name && !email && !msg) return alert("bidang harus diisi") 
-      const ged = await axios.get(`/hhxhh/post?name=${name}&email=${email}&msg=${msg}`);
-      alert("thankyou")
-      setTimeout(() => {
-         location.reload()
-      }, 3000)
-   } catch (e) {
-      alert("kesalahan")
-   }
-})
 
 noIklan.addEventListener("click", () => {
    iklan.style.display = "none"
@@ -56,46 +39,70 @@ document.addEventListener("DOMContentLoaded", () => {
       loader.style.display = "none"
    }, 2000);
    
-   const messages = document.getElementById("messages")
-   
-   fetch("./request/db.json")
-   .then(res => {
-      if(!res.ok) alert("gagal mengambil data")
-      return res.json()
-   })
-   .then(json => renderMessage(json))
-   .catch(err => {
-      messages.innerHTML = `
-      <p>Error Saat Mengambil list Request ${err}</p>
-      `
-   })
-   
-   function renderMessage(data) {
-      const messages = document.getElementById("messages");
-      messages.innerHTML = "";
+  const form = document.getElementById("formMsg");
+  const messagesContainer = document.getElementById("messages");
 
-      Object.keys(data).sort((a, b) => Number(a) - Number(b))
-      .forEach((key) => {
-         const item = data[key];
-         const div = document.createElement("div");
-         div.className = "bg-white shadow-md rounded-xl p-4 mb-4 border border-gray-200 hover:shadow-lg transition";
+  // semua pesan
+  async function loadMessages() {
+    try {
+      const res = await fetch("/hhxhh/post");
+      const data = await res.json();
+      renderMessages(data);
+    } catch (err) {
+      console.error("❌ Gagal load pesan:", err);
+    }
+  }
 
-         div.innerHTML = `
-         <div class="flex flex-col gap-2">
-            <span class="text-lg font-semibold text-gray-800">
-               Name : ${escapeHTML(item.name)}
-            </span>
-            <span class="text-sm text-blue-600 break-all">
-               Email : ${escapeHTML(item.email)}
-            </span>
-            <p class="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100">
-               Message : ${escapeHTML(item.msg)}
-            </p>
-         </div>
-         `;
-         messages.appendChild(div);
+  // POST
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const msg = document.getElementById("msg").value.trim();
+
+    if (!name || !email || !msg) return alert("Isi semua kolom dulu ya!");
+
+    try {
+      const res = await fetch("/hhxhh/post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, msg })
       });
-   }
+
+      if (!res.ok) throw new Error("Gagal kirim pesan");
+
+      const data = await res.json();
+      renderMessages(data);
+
+      form.reset();
+    } catch (err) {
+      console.error("❌ Error kirim:", err);
+      alert("Gagal mengirim pesan 😔");
+    }
+  });
+
+  // Renderinh
+  function renderMessages(data) {
+    messagesContainer.innerHTML = "";
+
+    data.forEach((item) => {
+      const div = document.createElement("div");
+      div.className =
+        "bg-white border shadow-sm rounded-xl p-4 transition hover:shadow-md";
+      div.innerHTML = `
+        <p class="font-semibold text-blue-700">👤 ${item.name}</p>
+        <p class="text-sm text-gray-500">${item.email}</p>
+        <p class="mt-2 text-gray-700">${item.msg}</p>
+        <p class="text-xs text-gray-400 mt-1">${new Date(item.createdAt).toLocaleString()}</p>
+      `;
+      messagesContainer.appendChild(div);
+    });
+  }
+
+  loadMessages();
+  
+  
    function escapeHTML(str=''){
       return String(str)
          .replace(/&/g, '&amp;')
@@ -107,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 send.addEventListener("click", async () => {
-  const q = inp.value.trim(); // ambil value di dalam event
+  const q = inp.value.trim(); 
   if (!q) {
     alert("Masukkan URL dulu!");
     return;
@@ -145,3 +152,6 @@ send.addEventListener("click", async () => {
       alert("Gagal fetch API");
    }
 });
+
+
+
