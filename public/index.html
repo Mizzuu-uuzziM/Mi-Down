@@ -9,11 +9,11 @@
       <script src="https://cdn.tailwindcss.com"></script>
       <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-      <link href="./style.css" rel="stylesheet">
+      <link href="./output.css" rel="stylesheet">
    </head>
    <body>
       <nav>
-         <h1>
+         <h1 class="font-bold text-4xl">
             Mi_Down
          </h1>
          <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center text-white font-bold">MD</div>
@@ -35,14 +35,14 @@
          </div>
       </div>
       <section class="mt-[70px] m-[30px] text-center justify-between p-[10%]">
-         <img src="https://avatars.githubusercontent.com/u/187776102?s=1024&v=4" alt="profile" class="w-[100%] rounded-[50px]">
+         <img src="https://avatars.githubusercontent.com/u/187776102?s=1024&v=4" alt="profile" class="w-[100%] shadow-2xl rounded-[50px]">
          <h1 class="mt-[30px] mb-[70px] font-bold text-[40px]">I Am Mizzuu</h1>
          <a href="https://saweria.co/mizzuuhtml" class="p-[20px] bg-gradient-to-br from-indigo-500 to-pink-500 text-center rounded-md">Donate</a>
       </section>
       <main>
       <section class="shadow mr-[10px] ml-[10px] bg-slate-50 p-[20px] rounded-lg border">
          <div>
-            <input class="input" id="inp" type="text" placeholder=" Paste Link" required><button id="send">
+            <input class="px-3 py-2 w-full rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-300" id="inp" type="text" placeholder=" Paste Link" required><button id="send">
                <i class="fas fa-download"></i>
             </button>
          </div><br><br>
@@ -81,9 +81,9 @@
       <footer>
          <h3>&copy; Mizzuu-uuzziM&trade;</h3>
       </footer>
-      <script src="index.js">
+      <script src="output.js">
       </script>
-     <!-- <script type="module">
+      <script type="module">
 const axios = require("axios");
 const inp = document.getElementById("inp");
 const send = document.getElementById("send");
@@ -101,7 +101,7 @@ send.addEventListener("click", async () => {
    <p>${req}</p>
                       `
 })
-      </script>-->
+      </script>
    </body>
 </html>
 <!--
